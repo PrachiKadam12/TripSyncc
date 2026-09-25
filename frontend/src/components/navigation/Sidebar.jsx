@@ -16,24 +16,26 @@ import {
   Wifi,
   WifiOff,
   Siren,
+  Ticket,
+  Compass,
 } from 'lucide-react';
 import { useTrip } from '../../context/TripContext.jsx';
 
 const SIDE_NAV = [
-  { to: '/app/finance', label: 'Finance', Icon: Wallet },
-  { to: '/app/trip', label: 'My Trip', Icon: Route },
-  { to: '/app/recovery', label: 'Recovery', Icon: LifeBuoy },
-  { to: '/app/group', label: 'Your Group', Icon: Users },
-  { to: '/app/documents', label: 'Documents', Icon: FileText },
-  { to: '/app/deadlines', label: 'Deadlines', Icon: AlarmClock },
-  { to: '/app/assistant', label: 'Assistant', Icon: Bot },
+  { to: '/app', label: 'Overview', Icon: Home, end: true },
+  { to: '/app/trip', label: 'Itinerary & Bookings', Icon: Ticket },
+  { to: '/app/finance', label: 'Money & Budget', Icon: Wallet },
+  { to: '/app/documents', label: 'Digital Wallet', Icon: FileText },
+  { to: '/app/group', label: 'Group Travellers', Icon: Users },
+  { to: '/app/recovery', label: 'Recovery Center', Icon: LifeBuoy },
+  { to: '/app/deadlines', label: 'Deadlines Guard', Icon: AlarmClock },
+  { to: '/app/assistant', label: 'AI Assistant', Icon: Bot },
 ];
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { state, dispatch } = useTrip();
   const menuRef = useRef(null);
-  const location = useLocation();
 
   useEffect(() => {
     if (!menuRef.current) return;
@@ -61,40 +63,40 @@ export default function Sidebar() {
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className="fixed bottom-20 left-4 z-40 lg:hidden rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform active:scale-95"
+        className="fixed bottom-20 left-4 z-40 lg:hidden rounded-2xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xl flex items-center gap-2 active:scale-95"
         aria-expanded={!collapsed}
         aria-label={!collapsed ? 'Close navigation menu' : 'Open navigation menu'}
       >
-        <List size={16} className="inline mr-2" />
-        {!collapsed ? 'Close' : 'Menu'}
+        <List size={16} />
+        {!collapsed ? 'Close Menu' : 'Travel Menu'}
       </button>
 
-      {/* Desktop sidebar */}
+      {/* Desktop Travel Command Sidebar */}
       <aside
-        className={`sticky top-0 hidden lg:flex h-screen shrink-0 flex-col border-r border-navy/5 glass transition-[width] duration-300 ${
+        className={`sticky top-0 hidden lg:flex h-screen shrink-0 flex-col border-r border-navy/10 bg-white/90 backdrop-blur-xl shadow-sm transition-[width] duration-300 ${
           collapsed ? 'w-[78px]' : 'w-64'
         }`}
         aria-label="Main navigation"
       >
         <NavLink
           to="/"
-          title="Back to TripSync home"
-          className={`flex items-center gap-2.5 px-5 py-5 ${collapsed ? 'justify-center px-0' : ''}`}
+          title="TripSync Travel Command"
+          className={`flex items-center gap-3 px-5 py-5 border-b border-navy/5 ${collapsed ? 'justify-center px-0' : ''}`}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-            <Plane size={18} />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500 text-white shadow-md">
+            <Plane size={20} />
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-extrabold tracking-tight text-navy">TripSync</p>
-              <p className="truncate text-[11px] text-ink-faint">One trip · every booking</p>
+              <p className="text-base font-black tracking-tight text-navy">TripSync</p>
+              <p className="truncate text-[10px] font-bold text-sky-600 uppercase tracking-widest">Travel Command</p>
             </div>
           )}
         </NavLink>
 
         <button
           onClick={() => setCollapsed((c) => !c)}
-          className={`mx-3 mb-2 flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-ink-soft hover:bg-navy/5 transition-colors ${
+          className={`mx-3 my-3 flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold text-navy-soft hover:bg-navy/5 transition-colors ${
             collapsed ? 'justify-center px-0' : ''
           }`}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -104,28 +106,19 @@ export default function Sidebar() {
         </button>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
-          {[
-            { to: '/app', label: 'Home', Icon: Home, end: true },
-            { to: '/app/finance', label: 'Finance', Icon: Wallet },
-            { to: '/app/trip', label: 'My Trip', Icon: Route },
-            { to: '/app/recovery', label: 'Recovery Center', Icon: LifeBuoy },
-            { to: '/app/group', label: 'Your Group', Icon: Users },
-            { to: '/app/documents', label: 'Documents', Icon: FileText },
-            { to: '/app/deadlines', label: 'Deadlines', Icon: AlarmClock },
-            { to: '/app/assistant', label: 'Assistant', Icon: Bot },
-          ].map(({ to, label, Icon, end }) => (
+          {SIDE_NAV.map(({ to, label, Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               title={collapsed ? label : undefined}
               className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                `group flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-xs font-bold transition-all ${
                   collapsed ? 'justify-center px-0' : ''
                 } ${
                   isActive
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-navy-soft hover:bg-navy/5 hover:text-navy'
+                    ? 'bg-sky-500 text-white shadow-md'
+                    : 'text-navy-soft hover:bg-sky-50 hover:text-sky-600'
                 }`
               }
             >
@@ -135,130 +128,98 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="border-b border-navy/5 p-3">
+        {/* SOS Emergency Module */}
+        <div className="border-t border-navy/5 p-3">
           <button
-            onClick={() => dispatch({ type: 'REQUEST_SOS_OPEN' })}
-            title="Open emergency assistance"
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+            onClick={() => {
+              dispatch({ type: 'REQUEST_SOS_OPEN' });
+              window.dispatchEvent(new CustomEvent('tripsync:sos-open'));
+            }}
+            title="Open Emergency Assistance"
+            className={`flex w-full items-center gap-3 rounded-2xl px-3.5 py-2.5 text-xs font-bold transition-all ${
               collapsed ? 'justify-center px-0' : ''
-            } bg-critical text-white hover:bg-critical/90`}
+            } bg-red-600 text-white hover:bg-red-700 shadow-md active:scale-95`}
           >
             <span className="relative flex h-2.5 w-2.5 shrink-0">
-              <span className="absolute inline-flex h-full w-full rounded-full opacity-70 animate-pulse-dot bg-white" />
+              <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping bg-white" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
             </span>
             {!collapsed && (
               <span className="flex-1 text-left">
                 <Siren size={14} className="inline mr-1" />
-                SOS Emergency
-                <span className="block text-[10px] font-medium opacity-75">Emergency assistance</span>
+                Emergency SOS
               </span>
             )}
           </button>
         </div>
 
+        {/* Online / Offline status */}
         <div className="border-t border-navy/5 p-3">
           <button
             onClick={() => dispatch({ type: 'SET_OFFLINE', offline: !state.offline })}
-            title="Toggle simulated offline mode (demo)"
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+            className={`flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-xs font-bold transition-colors ${
               collapsed ? 'justify-center px-0' : ''
-            } ${state.offline ? 'bg-critical-light text-critical' : 'bg-emerald-light text-emerald'}`}
+            } ${state.offline ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-900'}`}
           >
-            <span className="relative flex h-2.5 w-2.5 shrink-0">
-              <span
-                className={`absolute inline-flex h-full w-full rounded-full opacity-60 animate-pulse-dot ${
-                  state.offline ? 'bg-critical' : 'bg-emerald'
-                }`}
-              />
-              <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${state.offline ? 'bg-critical' : 'bg-emerald'}`} />
-            </span>
+            <span className={`h-2 w-2 rounded-full ${state.offline ? 'bg-amber-500' : 'bg-emerald-500'}`} />
             {!collapsed && (
-              <span className="flex-1 text-left">
-                {state.offline ? 'Offline' : 'Online'}
-                <span className="block text-[10px] font-medium opacity-70">
-                  {state.offline ? 'Saved trip info' : 'Live updates on'}
-                </span>
+              <span className="flex-1 text-left truncate">
+                {state.offline ? 'Simulated Offline' : 'Live Sync Active'}
               </span>
             )}
           </button>
-          {!collapsed && (
-            <p className="mt-2 flex items-center gap-1.5 px-3 text-[10px] text-ink-faint">
-              {state.offline ? <WifiOff size={11} /> : <Wifi size={11} />}
-              Tap to {state.offline ? 'go online' : 'simulate offline'} (demo)
-            </p>
-          )}
         </div>
-
-        <motion.div layout className="sr-only" />
       </aside>
 
-      {/* Mobile slide-out menu */}
+      {/* Mobile Slide-Out Drawer Menu */}
       <AnimatePresence>
         {!collapsed && (
           <>
             <motion.div
-              className="fixed inset-0 z-40 bg-navy/40 lg:hidden"
+              className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setCollapsed(true)}
-              aria-hidden="true"
             />
             <motion.nav
               ref={menuRef}
-              className="fixed left-0 top-0 z-50 h-full w-72 max-w-full bg-white shadow-float lg:hidden"
+              className="fixed left-0 top-0 z-50 h-full w-72 max-w-full bg-white shadow-2xl lg:hidden flex flex-col"
               initial={{ x: -100 }}
               animate={{ x: 0 }}
               exit={{ x: -100 }}
-              transition={{ type: 'tween', duration: 0.22 }}
-              aria-label="Mobile navigation"
+              transition={{ type: 'tween', duration: 0.2 }}
             >
-              <div className="flex items-center justify-between border-b border-navy/5 p-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-                    <Plane size={18} />
+              <div className="flex items-center justify-between border-b border-navy/10 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500 text-white shadow-md">
+                    <Plane size={20} />
                   </div>
                   <div>
-                    <p className="text-sm font-extrabold tracking-tight text-navy">TripSync</p>
-                    <p className="truncate text-[11px] text-ink-faint">One trip · every booking</p>
+                    <p className="text-base font-black text-navy">TripSync</p>
+                    <p className="text-[10px] font-bold text-sky-600 uppercase">Digital Travel Command</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setCollapsed(true)}
                   className="rounded-full p-2 text-ink-soft hover:bg-navy/5"
-                  aria-label="Close navigation menu"
                 >
-                  <ChevronLeft size={18} className="rotate-180" />
+                  <ChevronLeft size={20} className="rotate-180" />
                 </button>
               </div>
 
-              <div className="border-b border-navy/5 px-3 py-3">
-                <NavLink
-                  to="/app"
-                  end
-                  onClick={() => setCollapsed(true)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-                      isActive ? 'bg-primary text-white shadow-sm' : 'text-navy-soft hover:bg-navy/5 hover:text-navy'
-                    }`
-                  }
-                >
-                  <Home size={18} className="shrink-0" />
-                  <span className="truncate">Home</span>
-                </NavLink>
-              </div>
-
-              <div className="space-y-1 overflow-y-auto px-3 pb-4">
+              <div className="flex-1 space-y-1.5 overflow-y-auto p-4">
                 {SIDE_NAV.map(({ to, label, Icon }) => (
                   <NavLink
                     key={to}
                     to={to}
                     onClick={() => setCollapsed(true)}
                     className={({ isActive }) =>
-                      `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-                        isActive ? 'bg-primary text-white shadow-sm' : 'text-navy-soft hover:bg-navy/5 hover:text-navy'
+                      `flex items-center gap-3.5 rounded-2xl px-4 py-3 text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-sky-500 text-white shadow-md'
+                          : 'text-navy-soft hover:bg-sky-50 hover:text-sky-600'
                       }`
                     }
                   >
@@ -268,56 +229,17 @@ export default function Sidebar() {
                 ))}
               </div>
 
-              <div className="border-t border-navy/5 p-3">
+              <div className="p-4 border-t border-navy/10">
                 <button
                   type="button"
                   onClick={() => {
                     dispatch({ type: 'REQUEST_SOS_OPEN' });
                     setCollapsed(true);
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl bg-critical px-3 py-2.5 text-sm font-semibold text-white hover:bg-critical/90"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-xs font-bold text-white shadow-md active:scale-95"
                 >
-                  <span className="relative flex h-2.5 w-2.5 shrink-0">
-                    <span className="absolute inline-flex h-full w-full rounded-full opacity-70 animate-pulse-dot bg-white" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
-                  </span>
-                  <span className="flex-1 text-left">
-                    <Siren size={14} className="inline mr-1" />
-                    SOS Emergency
-                    <span className="block text-[10px] font-medium opacity-75">Emergency assistance</span>
-                  </span>
+                  <Siren size={16} /> Emergency SOS
                 </button>
-              </div>
-
-              <div className="border-t border-navy/5 p-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    dispatch({ type: 'SET_OFFLINE', offline: !state.offline });
-                  }}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-                    state.offline ? 'bg-critical-light text-critical' : 'bg-emerald-light text-emerald'
-                  }`}
-                >
-                  <span className="relative flex h-2.5 w-2.5 shrink-0">
-                    <span
-                      className={`absolute inline-flex h-full w-full rounded-full opacity-60 animate-pulse-dot ${
-                        state.offline ? 'bg-critical' : 'bg-emerald'
-                      }`}
-                    />
-                    <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${state.offline ? 'bg-critical' : 'bg-emerald'}`} />
-                  </span>
-                  <span className="flex-1 text-left">
-                    {state.offline ? 'Offline' : 'Online'}
-                    <span className="block text-[10px] font-medium opacity-70">
-                      {state.offline ? 'Saved trip info' : 'Live updates on'}
-                    </span>
-                  </span>
-                </button>
-                <p className="mt-2 flex items-center gap-1.5 px-3 text-[10px] text-ink-faint">
-                  {state.offline ? <WifiOff size={11} /> : <Wifi size={11} />}
-                  Tap to {state.offline ? 'go online' : 'simulate offline'} (demo)
-                </p>
               </div>
             </motion.nav>
           </>
