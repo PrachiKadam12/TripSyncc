@@ -101,16 +101,32 @@ CREATE TABLE IF NOT EXISTS public.documents (
     trip_id UUID NOT NULL REFERENCES public.trips(id) ON DELETE CASCADE,
     doc_key TEXT NOT NULL,
     title TEXT NOT NULL,
-    kind TEXT NOT NULL, -- flight, hotel, insurance, passport
+    kind TEXT NOT NULL, -- flight, hotel, insurance, passport, other
     meta TEXT,
     file_url TEXT,
+    file_path TEXT,
+    file_name VARCHAR(255),
+    file_size_bytes BIGINT,
+    mime_type VARCHAR(100),
+    extracted_data JSONB DEFAULT '{}'::jsonb,
     is_offline BOOLEAN DEFAULT TRUE,
     relevant_on_disruption BOOLEAN DEFAULT FALSE,
     expiry_date DATE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 9. Emergency Contacts Table
+-- 9. Dependencies (Connected Itinerary Graph) Table
+CREATE TABLE IF NOT EXISTS public.dependencies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    trip_id UUID NOT NULL REFERENCES public.trips(id) ON DELETE CASCADE,
+    from_item_id UUID NOT NULL REFERENCES public.itinerary_items(id) ON DELETE CASCADE,
+    to_item_id UUID NOT NULL REFERENCES public.itinerary_items(id) ON DELETE CASCADE,
+    dependency_type VARCHAR(30) NOT NULL DEFAULT 'sequence',
+    minimum_buffer_minutes INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 10. Emergency Contacts Table
 CREATE TABLE IF NOT EXISTS public.emergency_contacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     trip_id UUID NOT NULL REFERENCES public.trips(id) ON DELETE CASCADE,
@@ -120,12 +136,18 @@ CREATE TABLE IF NOT EXISTS public.emergency_contacts (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Storage bucket for travel documents
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('travel-documents', 'travel-documents', false)
+ON CONFLICT (id) DO NOTHING;
+
 -- Enable Row Level Security (RLS) policies
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trips ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trip_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.itinerary_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.dependencies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.budgets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
@@ -136,6 +158,7 @@ CREATE POLICY "Allow public read access on trips" ON public.trips FOR SELECT USI
 CREATE POLICY "Allow public read access on trip_members" ON public.trip_members FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on bookings" ON public.bookings FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on itinerary_items" ON public.itinerary_items FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on dependencies" ON public.dependencies FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on budgets" ON public.budgets FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on expenses" ON public.expenses FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on documents" ON public.documents FOR SELECT USING (true);

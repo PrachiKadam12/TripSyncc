@@ -211,9 +211,17 @@ export default function Landing() {
             <a href="#features" className="hover:text-primary">Features</a>
             <a href="#demo" className="hover:text-primary">See the demo</a>
           </nav>
-          <Link to="/app" className="btn-primary px-4 py-2 text-sm">
-            Open TripSync <ArrowRight size={15} />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/login"
+              className="rounded-xl px-3.5 py-2 text-xs font-bold text-navy-soft hover:bg-navy/5 hover:text-navy transition-all"
+            >
+              Sign In
+            </Link>
+            <Link to="/app" className="btn-primary px-4 py-2 text-sm shadow-sm">
+              Open TripSync <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
       </header>
 
