@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlarmClock,
@@ -9,6 +9,7 @@ import {
   Home,
   LifeBuoy,
   List,
+  LogOut,
   Plane,
   Route,
   Users,
@@ -18,11 +19,15 @@ import {
   Siren,
   Ticket,
   Compass,
+  UserCheck,
 } from 'lucide-react';
 import { useTrip } from '../../context/TripContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const SIDE_NAV = [
   { to: '/app', label: 'Overview', Icon: Home, end: true },
+  { to: '/app/twin', label: 'Weather Twin', Icon: Compass },
+  { to: '/app/profile', label: 'Travel Profile', Icon: UserCheck },
   { to: '/app/trip', label: 'Itinerary & Bookings', Icon: Ticket },
   { to: '/app/finance', label: 'Money & Budget', Icon: Wallet },
   { to: '/app/documents', label: 'Digital Wallet', Icon: FileText },
@@ -35,7 +40,16 @@ const SIDE_NAV = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { state, dispatch } = useTrip();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const menuRef = useRef(null);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (_) {}
+    navigate('/');
+  };
 
   useEffect(() => {
     if (!menuRef.current) return;
@@ -169,6 +183,20 @@ export default function Sidebar() {
             )}
           </button>
         </div>
+
+        {/* Sign Out */}
+        <div className="border-t border-navy/5 p-3">
+          <button
+            onClick={handleSignOut}
+            title="Sign Out"
+            className={`flex w-full items-center gap-2.5 rounded-2xl px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors ${
+              collapsed ? 'justify-center px-0' : ''
+            }`}
+          >
+            <LogOut size={16} className="shrink-0" />
+            {!collapsed && <span className="flex-1 text-left">Sign Out</span>}
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Slide-Out Drawer Menu */}
@@ -229,7 +257,7 @@ export default function Sidebar() {
                 ))}
               </div>
 
-              <div className="p-4 border-t border-navy/10">
+              <div className="p-4 border-t border-navy/10 space-y-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -239,6 +267,13 @@ export default function Sidebar() {
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-xs font-bold text-white shadow-md active:scale-95"
                 >
                   <Siren size={16} /> Emergency SOS
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setCollapsed(true); handleSignOut(); }}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-100 transition active:scale-95"
+                >
+                  <LogOut size={15} /> Sign Out
                 </button>
               </div>
             </motion.nav>

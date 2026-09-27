@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, RotateCcw, Sparkles, Users } from 'lucide-react';
+import { CheckCircle2, RotateCcw, Sparkles, Users, ShieldCheck } from 'lucide-react';
 import { useTrip } from '../../context/TripContext.jsx';
 import { recoveryPlans, groupMembers } from '../../data/demoTrip.js';
 import RecoveryPlanCard from '../../components/cards/RecoveryPlanCard.jsx';
@@ -10,7 +10,7 @@ import ConfirmPlanModal from '../../components/ConfirmPlanModal.jsx';
 import DisruptionBanner from '../../components/DisruptionBanner.jsx';
 import GroupRecoverySelector from '../../components/group/GroupRecoverySelector.jsx';
 
-export default function RecoveryPage() {
+function DemoRecoveryPage() {
   const { state, dispatch } = useTrip();
   const navigate = useNavigate();
   const [confirmPlan, setConfirmPlan] = useState(null);
@@ -66,12 +66,8 @@ export default function RecoveryPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button className="btn-primary" onClick={() => navigate('/app/trip')}>
-              View my trip
-            </button>
-            <button className="btn-secondary" onClick={() => navigate('/app')}>
-              Back home
-            </button>
+            <button className="btn-primary" onClick={() => navigate('/app/trip')}>View my trip</button>
+            <button className="btn-secondary" onClick={() => navigate('/app')}>Back home</button>
           </div>
         </div>
       )}
@@ -84,26 +80,14 @@ export default function RecoveryPage() {
               <p className="flex-1 text-sm font-semibold text-navy">
                 {selected.tag} plan chosen — review the details, then update your trip to apply it.
               </p>
-              <button className="btn-primary text-sm" onClick={() => setConfirmPlan(selected)}>
-                Update my trip
-              </button>
+              <button className="btn-primary text-sm" onClick={() => setConfirmPlan(selected)}>Update my trip</button>
             </div>
           )}
 
           <div className="grid gap-5 xl:grid-cols-3">
             {recoveryPlans.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07 }}
-              >
-                <RecoveryPlanCard
-                  plan={plan}
-                  selected={state.selectedPlanId === plan.id}
-                  applied={false}
-                  onChoose={choose}
-                />
+              <motion.div key={plan.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
+                <RecoveryPlanCard plan={plan} selected={state.selectedPlanId === plan.id} applied={false} onChoose={choose} />
               </motion.div>
             ))}
           </div>
@@ -119,28 +103,18 @@ export default function RecoveryPage() {
         <>
           <div className="grid gap-5 xl:grid-cols-3">
             {recoveryPlans.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07 }}
-              >
+              <motion.div key={plan.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
                 <RecoveryPlanCard plan={plan} applied={applied.id === plan.id} />
               </motion.div>
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button className="btn-primary" onClick={() => navigate('/app/trip')}>
-              View updated trip
-            </button>
-            <button className="btn-secondary" onClick={() => navigate('/app')}>
-              Back home
-            </button>
+            <button className="btn-primary" onClick={() => navigate('/app/trip')}>View updated trip</button>
+            <button className="btn-secondary" onClick={() => navigate('/app')}>Back home</button>
           </div>
         </>
       )}
 
-      {/* Group recovery section — visible when disruption is active and group members are affected */}
       {state.phase !== 'normal' && state.phase !== 'recovered' && groupMembers.some((m) => m.affected) && (
         <section aria-label="Group recovery" className="pt-4">
           <div className="mb-4 flex items-center gap-2">
@@ -160,4 +134,37 @@ export default function RecoveryPage() {
       <ConfirmPlanModal plan={confirmPlan} open={!!confirmPlan} onClose={() => setConfirmPlan(null)} onConfirm={apply} />
     </div>
   );
+}
+
+function RealRecoveryPage() {
+  const navigate = useNavigate();
+  return (
+    <div className="space-y-8">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Recovery Center</h1>
+          <p className="mt-1 text-sm text-ink-soft">Disruption resolution and alternate booking recommendations.</p>
+        </div>
+      </header>
+      <div className="card flex flex-col items-center gap-4 p-10 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-light text-emerald">
+          <ShieldCheck size={30} />
+        </div>
+        <div>
+          <h2 className="text-lg font-extrabold text-navy">Your trips are safe</h2>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-ink-soft">
+            You currently have no active disruptions. If any bookings are cancelled, our AI agent will find the best alternatives here.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button className="btn-secondary" onClick={() => navigate('/app')}>Back to dashboard</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function RecoveryPage() {
+  const { isDemoUser } = useTrip();
+  return isDemoUser ? <DemoRecoveryPage /> : <RealRecoveryPage />;
 }

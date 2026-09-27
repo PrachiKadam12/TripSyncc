@@ -30,11 +30,10 @@ export default function DisruptionModal({ open, onClose }) {
               role="radio"
               aria-checked={active}
               onClick={() => setSelected(preset.id)}
-              className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-all ${
-                active
+              className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-all ${active
                   ? 'border-critical/40 bg-critical-light/60 ring-2 ring-critical/20'
                   : 'border-navy/10 bg-white hover:border-navy/20'
-              }`}
+                }`}
             >
               <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-critical text-white' : 'bg-periwinkle text-navy-soft'}`}>
                 <Icon size={18} />

@@ -32,8 +32,15 @@ create table if not exists public.trip_members (
   role text not null default 'traveler' check(role in ('owner','traveler','viewer')),
   is_primary_traveler boolean not null default false, is_emergency_contact boolean not null default false,
   date_of_birth date, nationality text, passport_last4 text, joined_at timestamptz default now(),
+  member_status text not null default 'invited' check(member_status in ('invited','accepted','declined')),
+  invitation_token text,
   unique(trip_id,user_id)
 );
+
+-- Migration helpers if table already exists
+alter table public.trip_members add column if not exists member_status text not null default 'invited' check(member_status in ('invited','accepted','declined'));
+alter table public.trip_members add column if not exists invitation_token text;
+alter table public.profiles add column if not exists profile_setup_status text default 'not_started';
 
 create table if not exists public.bookings (
   id uuid primary key default gen_random_uuid(), trip_id uuid not null references public.trips(id) on delete cascade,
